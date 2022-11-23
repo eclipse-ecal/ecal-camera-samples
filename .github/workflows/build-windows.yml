@@ -1,0 +1,67 @@
+name: Windows
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-windows:
+    runs-on: windows-2019
+
+    steps:
+    - name: Download eCAL
+      uses: robinraju/release-downloader@v1.6
+      with:
+        repository: "eclipse-ecal/ecal"
+        latest: true
+        fileName: "ecal_*-win64.exe"
+        
+    - name: Extract eCAL Version
+      run: |
+        echo "ECAL_VERSION=$(ls | sed 's@^[^0-9]*\([0-9.]\+\).*@\1@' | cut -d"." -f-2)" >> "$GITHUB_ENV"
+      shell: bash
+
+    - name: Install eCAL
+      run: Start-Process -Wait -FilePath ".\ecal_*-win64.exe" -ArgumentList "/SILENT /ALLUSERS /SUPPRESSMSGBOXES /NORESTART /TYPE=full"
+
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        submodules:  'true'
+        fetch-depth: 0
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '5.15.2'
+        target: 'desktop'
+        arch: 'win64_msvc2015_64'
+        
+    - name: CMake
+      run: |
+        mkdir "${{ runner.workspace }}\_build"
+        cd "${{ runner.workspace }}\_build"
+        cmake -G "Visual Studio 16 2019" -Tv140 -Ax64 ^
+              -DCMAKE_BUILD_TYPE=Release ^
+              -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=ON ^
+              -DCMAKE_PREFIX_PATH="C:/eCAL/lib/cmake/;C:/eCAL/cmake" ^
+              -DCMAKE_MODULE_PATH="C:/eCAL/cmake" ^
+              -DCMAKE_INSTALL_PREFIX="${{ runner.workspace }}\_deploy" ^
+              %GITHUB_WORKSPACE%
+      shell: cmd
+      
+    - name: Build
+      run: cmake --build . --config Release
+      working-directory: ${{ runner.workspace }}\_build
+      
+    - name: Install
+      run: | 
+        cmake --build . --config Release --target install
+      working-directory: ${{ runner.workspace }}\_build
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ecal-camera-samples-windows-ecal-${{env.ECAL_VERSION}}
+        path: ${{ runner.workspace }}\_deploy\bin

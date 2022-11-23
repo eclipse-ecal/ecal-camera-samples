@@ -1,0 +1,90 @@
+name: Ubuntu
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-ubuntu:
+
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, ubuntu-20.04]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+
+    - name: Set Variables
+      run: |
+        if [[ '${{ matrix.os }}' == 'ubuntu-22.04' ]]; then
+          echo "CC_PATH=/usr/bin/gcc-11"   >> "$GITHUB_ENV"
+          echo "CXX_PATH=/usr/bin/g++-11"  >> "$GITHUB_ENV"
+        elif [[ '${{ matrix.os }}' == 'ubuntu-20.04' ]]; then
+          echo "CC_PATH=/usr/bin/gcc-9"    >> "$GITHUB_ENV"
+          echo "CXX_PATH=/usr/bin/g++-9"   >> "$GITHUB_ENV"
+        else
+          echo "CC_PATH=/usr/bin/gcc"    >> "$GITHUB_ENV"
+          echo "CXX_PATH=/usr/bin/g++"   >> "$GITHUB_ENV"
+        fi
+
+    - name: Install Dependencies
+      run: |
+          sudo add-apt-repository ppa:ecal/ecal-latest
+          sudo apt-get update
+          sudo apt-get install ecal qtmultimedia5-dev libqt5multimedia5-plugins qtwayland5 libprotoc-dev protobuf-compiler libhdf5-dev
+
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        submodules:  'true'
+        fetch-depth: 0
+
+    - name: CMake
+      run: |
+        export CC=${{ env.CC_PATH }}
+        export CXX=${{ env.CXX_PATH }}
+
+        mkdir "${{ runner.workspace }}/_build"
+        cd "${{ runner.workspace }}/_build"
+        cmake -DCMAKE_BUILD_TYPE=Release \
+              -DCMAKE_INSTALL_LIBDIR=lib/x86_64-linux-gnu \
+              "${{ github.workspace }}"
+
+      shell: bash
+
+    - name: Build Release
+      run: cmake --build . --config Release
+      working-directory: ${{ runner.workspace }}/_build
+
+    - name: Extract eCAL Version Number
+      run: |
+        ECAL_VERSION=$(dpkg -s ecal | grep '^Version:' | sed 's@^[^0-9]*\([0-9.]\+\).*@\1@' | cut -d"." -f-2)
+        echo "ecal_version=${ECAL_VERSION}" >> "$GITHUB_ENV"
+
+    - name: Read Project Name from CMakeCache
+      run: |
+        CMAKE_PROJECT_NAME_STRING=$(cat "${{runner.workspace}}/_build/CMakeCache.txt" | grep "^CMAKE_PROJECT_NAME:")
+        arr=(${CMAKE_PROJECT_NAME_STRING//=/ })
+        CMAKE_PROJECT_NAME=${arr[1]}
+        echo "cmake_project_name=$CMAKE_PROJECT_NAME"  >> "$GITHUB_ENV"
+      shell: bash
+
+    - name: Pack
+      run: cpack -G DEB
+      working-directory: ${{ runner.workspace }}/_build
+
+    - name: Rename .deb installer
+      run: |
+        mv *.deb "${{env.cmake_project_name}}-${{ matrix.os }}-ecal-${{env.ecal_version}}.deb"
+      shell: bash
+      working-directory: ${{runner.workspace}}/_build/_deploy/
+
+
+    - name: Upload Debian
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{env.cmake_project_name}}-${{ matrix.os }}-ecal-${{env.ecal_version}}
+        path: ${{ runner.workspace }}/_build/_deploy/*.deb

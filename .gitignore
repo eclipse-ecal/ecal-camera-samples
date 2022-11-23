@@ -1,0 +1,16 @@
+# CMake build folders
+/_build
+/build
+
+# Visual Studio 2015/2017 cache/options directory
+.vs/
+
+# Visual Studio code
+*.vscode
+
+# QtCreator temporary files
+CMakeLists.txt.user
+
+# Clion
+.idea
+cmake-build-*
