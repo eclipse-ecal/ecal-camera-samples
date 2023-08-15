@@ -43,7 +43,7 @@ jobs:
       run: |
         mkdir "${{ runner.workspace }}\_build"
         cd "${{ runner.workspace }}\_build"
-        cmake -G "Visual Studio 16 2019" -Tv140 -Ax64 ^
+        cmake -G "Visual Studio 16 2019" -Tv142 -Ax64 ^
               -DCMAKE_BUILD_TYPE=Release ^
               -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=ON ^
               -DCMAKE_PREFIX_PATH="C:/eCAL/lib/cmake/;C:/eCAL/cmake" ^
