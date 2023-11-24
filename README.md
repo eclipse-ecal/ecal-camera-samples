@@ -4,10 +4,25 @@ The ecal-camera-samples is a set of projects around sending and receiving image 
 
 After installation, you have 2 components available:
 
-1. A **sender application** `ecal_camera_snd` that publishes the data of a webcam device to an eCAL topic
-2. A **monitor plugin** that can display the image data in the eCAL Monitor
+1. A **sender application** `ecal_camera_snd` (C++) that publishes the data of a webcam device to an eCAL topic, and a Python version achieving the same thing, called `webcam_grabber`.
+2. A **monitor plugin** (C++) that can display the image data in the eCAL Monitor
 
-# How to install prebuilt binaries
+# Python Setup 
+
+It's recommended to start the `webcam-grabber` in a virtual environment.
+Then install all necessary requirements
+```bash
+pip install -r ./requirements.txt
+```
+Additionaly, install the python wheel matching your python version, and operating system.
+E.g. if you are using Python 3.11 64bit on a Windows operating system, and eCAL 5.12.1, run
+```bash
+pip install ./ecal5-5.12.1-cp311-cp311-win_amd64.whl
+```
+The wheels can be downloaded from the Github releases page [here](https://github.com/eclipse-ecal/ecal/releases).
+
+
+# C++ Setup - How to install prebuilt binaries
 
 1. [Install eCAL](https://eclipse-ecal.github.io/ecal/getting_started/setup.html) (obviously 😉)
 2. Go to the [release page](https://github.com/eclipse-ecal/ecal-camera-samples/releases) and pick the version matching your OS and eCAL Version
@@ -21,7 +36,7 @@ After installation, you have 2 components available:
     sudo dpkg -i ecal-camera-samples*.deb
     ```
 
-# How to build it yourself
+# C++ Setup - How to build it yourself
 
 ## Windows
 
@@ -68,17 +83,17 @@ After installation, you have 2 components available:
 
 # Usage
 
-## eCAL Camera Sender
+## eCAL Camera Sender (C++)
 
 This application captures the stream from a specified camera and publishes it via eCAL. Optionally, the resolution of the image as well as a maximal framerate can be specified.
 
 Usage:
-```
+```bash
 ecal_camera_snd [topicName] [cameraName] [OPTIONAL_resolutionWidth] [OPTIONAL_resolutionHeight] [OPTIONAL_maxFps]
 ```
 
 Command Line:
-```
+```bash
 topicName:        Name of the eCAL Topic to publish to
 cameraName:       Path to camera. Call --list-cameras to list
                   available cameras. 
@@ -93,6 +108,24 @@ maxFps:           Maximal framerate (optional)
 Example:
 ```bash
 ecal_camera_snd compressed_image_protobuf /dev/video0 640 480 10
+```
+
+## eCAL Camera sender (Python)
+
+Run the python script `webcam-grabber.py`.
+You will be able to see the published data in eCAL Monitor.
+
+```bash
+python .\webcam-grabber.py --help
+usage: webcam-grabber.py [-h] [--camera-id CAMERA_ID] [--compressed] [--topic-name TOPIC_NAME]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --camera-id CAMERA_ID
+                        Which camera to use for feed
+  --compressed          send compressed image instead of raw image
+  --topic-name TOPIC_NAME
+                        topic name to publish
 ```
 
 ## eCAL Monitor Plugin
