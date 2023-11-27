@@ -13,7 +13,7 @@ E.g. if you are using Python 3.11 64bit on a Windows operating system, and eCAL 
 ```
 pip install ./ecal5-5.12.1-cp311-cp311-win_amd64.whl
 ```
-The wheels can be downloaded from the Github releases page [here](https://github.com/eclipse-ecal/ecal/releases).
+The eCAL wheels can be downloaded from the Github releases page [here](https://github.com/eclipse-ecal/ecal/releases).
 
 
 ## Usage
@@ -21,7 +21,7 @@ Run the python script `webcam-grabber.py`.
 You will be able to see the published data in eCAL Monitor.
 
 ```
-python .\webcam-grabber.py --help
+python .\ecal_camera_send\webcam-grabber.py --help
 usage: webcam-grabber.py [-h] [--camera-id CAMERA_ID] [--compressed] [--topic-name TOPIC_NAME]
 
 optional arguments:

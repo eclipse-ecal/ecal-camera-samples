@@ -60,7 +60,10 @@ class RawImageHandler():
     self.image.step = 3 * video_frame.shape[1]
     self.pub.send(self.image)
 
-def main(args):
+def main():
+  parser = create_parser()
+  args = parser.parse_args()
+
   # print eCAL version and date
   print("eCAL {} ({})\n".format(ecal_core.getversion(), ecal_core.getdate()))
   
@@ -100,6 +103,4 @@ def create_parser():
   return parser
 
 if __name__ == "__main__":
-  parser = create_parser()
-  args = parser.parse_args()
-  main(args)  
+  main()  

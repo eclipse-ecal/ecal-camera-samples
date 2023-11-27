@@ -11,15 +11,15 @@ After installation, you have 2 components available:
 
 It's recommended to start the `webcam-grabber` in a virtual environment.
 Then install all necessary requirements
-```bash
+```
 pip install -r ./requirements.txt
 ```
 Additionaly, install the python wheel matching your python version, and operating system.
 E.g. if you are using Python 3.11 64bit on a Windows operating system, and eCAL 5.12.1, run
-```bash
+```
 pip install ./ecal5-5.12.1-cp311-cp311-win_amd64.whl
 ```
-The wheels can be downloaded from the Github releases page [here](https://github.com/eclipse-ecal/ecal/releases).
+The eCAL wheels can be downloaded from the Github releases page [here](https://github.com/eclipse-ecal/ecal/releases).
 
 
 # C++ Setup - How to install prebuilt binaries
@@ -115,8 +115,8 @@ ecal_camera_snd compressed_image_protobuf /dev/video0 640 480 10
 Run the python script `webcam-grabber.py`.
 You will be able to see the published data in eCAL Monitor.
 
-```bash
-python .\webcam-grabber.py --help
+```
+python .\ecal_camera_send_python\ecal_camera_send\webcam-grabber.py --help
 usage: webcam-grabber.py [-h] [--camera-id CAMERA_ID] [--compressed] [--topic-name TOPIC_NAME]
 
 optional arguments:
