@@ -1,3 +1,3 @@
 opencv-python
 #ecal5
-./datatypes_collection
+datatypes_collection @ git+https://github.com/eclipse-ecal/protobuf-datatypes-collection@main

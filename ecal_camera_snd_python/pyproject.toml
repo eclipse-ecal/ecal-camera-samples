@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ecal_camera_send"
+license = {file = "LICENSE.md"}
+version = "0.1.0"
+dependencies = [
+    "opencv-python",
+    #"ecal5",
+    "datatypes_collection @ git+https://github.com/eclipse-ecal/protobuf-datatypes-collection@main"
+]
+
+[project.scripts]
+webcam-grabber = "ecal_camera_send.webcam_grabber:main"
